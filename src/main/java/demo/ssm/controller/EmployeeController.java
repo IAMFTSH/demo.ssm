@@ -3,6 +3,7 @@ package demo.ssm.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import demo.ssm.common.JsonResult;
+import demo.ssm.common.RedisUtil;
 import demo.ssm.entity.Employee;
 import demo.ssm.exception.SysException;
 import demo.ssm.mapper.EmployeeMapper;
@@ -11,11 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -39,7 +36,8 @@ public class EmployeeController {
     EmployeeService employeeService;
     @Autowired
     EmployeeMapper employeeMapper;
-
+    @Autowired
+    RedisUtil redisUtil;
     @ApiOperation("根据id获得用户")
     @RequestMapping(value = "/getById", method = RequestMethod.GET)
     public JsonResult getById(String id) {
@@ -108,6 +106,25 @@ public class EmployeeController {
         boolean result = employeeService.save(employee);
         if (!result) {
             throw new SysException("增加错误");
+        }
+    }
+    @ApiOperation("发送短信")
+    @RequestMapping(value = "/sendSMS",method = RequestMethod.GET)
+    public JsonResult sendSMS(String mobile) {
+        if (employeeService.sendSMS(mobile)){
+            return JsonResult.isOk();
+        }else {
+            return JsonResult.errorUnKnow("短信发送失败");
+        }
+    }
+    @ApiOperation("从redis获得短信验证码")
+    @RequestMapping(value = "/getSMS",method = RequestMethod.GET)
+    public JsonResult getSMS(String mobile) {
+        String code=(String)redisUtil.getString("mobile"+mobile);
+        if (code!=null) {
+            return JsonResult.isOk(code);
+        }else {
+            return JsonResult.error("验证码已过期");
         }
     }
 }

@@ -12,5 +12,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2020-10-16
  */
 public interface EmployeeService extends IService<Employee> {
+    public boolean sendSMS(String s);
 
 }

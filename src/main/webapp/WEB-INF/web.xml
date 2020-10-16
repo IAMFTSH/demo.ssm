@@ -14,7 +14,8 @@
     <param-value>
       classpath:spring-all.xml,
       classpath:spring-service.xml,
-      classpath:spring-dao.xml
+      classpath:spring-dao.xml,
+      classpath:spring-redis.xml
     </param-value>
   </context-param>
 
