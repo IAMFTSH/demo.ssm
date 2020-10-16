@@ -3,7 +3,7 @@ package demo.ssm.common;
 /**
  * 状态码 200 成功 500 表示未知错误
  * 
- * @author jsjxy
+ * @author 邝明山
  *
  */
 public class JsonResult {
