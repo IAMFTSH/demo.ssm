@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="jdbc.properties"></properties>
+
+    <settings><!--需要在properties后面-->
+        <!-- 开启日志，并指定使用的具体日志 -->
+<!--        <setting name="logImpl" value="LOG4J"/>-->
+        <!-- 开启延迟加载 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+
+        <!-- 关闭立即加载 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+
+        <!-- 使用jdbc的getGeneratedKeys获取数据库自增主键值 -->
+        <setting name="useGeneratedKeys" value="true" />
+
+        <!-- 使用列别名替换列名 默认:true -->
+        <setting name="useColumnLabel" value="true" />
+
+        <!-- 开启驼峰命名转换:Table{create_time} -> Entity{createTime} -->
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+    </settings>
+
+<!--    <typeAliases>
+&lt;!&ndash;        <typeAlias type="org.studyMybatisByMaven.entity.Person" alias="Person"></typeAlias>&ndash;&gt;
+        <package name="org.me.learn_ssm.entity"/>&lt;!&ndash;这个包底下的类名就是别名&ndash;&gt;
+    </typeAliases>-->
+
+<!--转换器-->
+<!--    <typeHandlers>
+        <typeHandler handler="BooleanAndInteger" javaType="Boolean" jdbcType="INTEGER"></typeHandler>&lt;!&ndash;jdbcType值只能大写&ndash;&gt;
+    </typeHandlers>-->
+
+    <!--mybatis单独使用配置数据库-->
+<!--    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>-->
+
+</configuration>
