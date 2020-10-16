@@ -4,14 +4,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
+import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -24,9 +28,11 @@ import java.util.ArrayList;
 @Configuration
 @EnableSwagger2
 @EnableWebMvc
-//http://localhost:8080/doc.html
+//http://localhost:8080/doc.htmlt
 //http://localhost:8080/swagger-ui.html
 public class SwaggerConfig {
+    public static final String AUTHORIZATION_HEADER = "token";
+    public static final String DEFAULT_INCLUDE_PATTERN = "/api/.*";
     @Bean
     public Docket docket(Environment environment){
         //Profiles profiles=Profiles.of("dev","test");  //dev环境和test环境
@@ -43,6 +49,12 @@ public class SwaggerConfig {
                 把flag=environment.acceptsProfiles(profiles);替换调下面flag=true；
 
  */
+        ParameterBuilder ticketPar = new ParameterBuilder();
+        List<Parameter> pars = new ArrayList<Parameter>();
+        ticketPar.name(AUTHORIZATION_HEADER).description("user ticket")//Token 以及Authorization 为自定义的参数，session保存的名字是哪个就可以写成那个
+                .modelRef(new ModelRef("string")).parameterType("header")
+                .required(false).build(); //header中的ticket参数非必填，传空也可以
+        pars.add(ticketPar.build());    //根据每个方法名也知道当前方法在设置什么参数
         boolean flag=true;
 
         return new Docket(DocumentationType.SWAGGER_2)
@@ -58,7 +70,8 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.basePackage("demo.ssm.controller"))
                 //过滤  只扫描请求路径中符合的
 /*                .paths(PathSelectors.ant("/user/**"))*/
-                .build();
+                .build()
+                .globalOperationParameters(pars);
     }
 
     @Bean

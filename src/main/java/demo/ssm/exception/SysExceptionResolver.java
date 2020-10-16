@@ -36,16 +36,13 @@ public class SysExceptionResolver implements HandlerExceptionResolver {
         if (ex instanceof SysException) {
             e = (SysException) ex;
         }
-        else if(ex instanceof ValidationException){
-            e = (ValidationException) ex;
-        }
         else {
-            e = new SysException("系统正在维护....");
+            e = ex;
         }
 
         response.setContentType("application/json;charset=utf-8");
         mv = new ModelAndView(new MappingJackson2JsonView());
-        mv.addObject(JsonResult.error(e.getMessage()));
+        mv.addObject(e.getMessage());
         return mv;
     }
 

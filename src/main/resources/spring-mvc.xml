@@ -25,6 +25,29 @@
     <!--开启SpringMVC框架注释支持-->
     <mvc:annotation-driven/>
 
+    <!-- 配置拦截器 -->
+    <mvc:interceptors>
+        <!-- 配置拦截器 -->
+        <mvc:interceptor>
+            <!-- 要拦截的具体的方法 -->
+            <mvc:mapping path="/employee/*"/>
+            <!--不要拦截的方法-->
+            <mvc:exclude-mapping path="/employee/login"/>
+            <mvc:exclude-mapping path="/employee/sendSMS"/>
+            <mvc:exclude-mapping path="/employee/loginBySMS"/>
+            <!-- 配置拦截器对象 -->
+            <bean class="demo.ssm.interceptor.LoginInterceptor"/>
+        </mvc:interceptor>
+        <!--         <mvc:interceptor>
+                    &lt;!&ndash; 要拦截的所有的方法 &ndash;&gt;       &lt;!&ndash;所有&ndash;&gt;
+                    <mvc:mapping path="/**"/>
+                    &lt;!&ndash; 不要拦截的方法
+                                <mvc:exclude-mapping path=""/>
+                                 &ndash;&gt;
+                    &lt;!&ndash; 配置拦截器对象 &ndash;&gt;
+                    <bean class="org.me.interceptor.InterceptorByMyself2"/>
+                </mvc:interceptor>-->
+    </mvc:interceptors>
     <!-- 配置异常处理器 -->
     <bean id="sysExceptionResolver" class="demo.ssm.exception.SysExceptionResolver"/>
 

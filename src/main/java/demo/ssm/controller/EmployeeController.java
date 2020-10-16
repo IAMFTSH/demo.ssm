@@ -1,7 +1,9 @@
 package demo.ssm.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import demo.ssm.common.JWT;
 import demo.ssm.common.JsonResult;
 import demo.ssm.common.RedisUtil;
 import demo.ssm.entity.Employee;
@@ -14,8 +16,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.sql.Wrapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +34,7 @@ import java.util.Map;
  * @since 2020-10-16
  */
 @RestController
-//@RequestMapping("employee")
+@RequestMapping("employee")
 public class EmployeeController {
     @Autowired
     EmployeeService employeeService;
@@ -125,6 +129,60 @@ public class EmployeeController {
             return JsonResult.isOk(code);
         }else {
             return JsonResult.error("验证码已过期");
+        }
+    }
+
+    //处理登录
+    @RequestMapping(value="login", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResult login(HttpServletRequest request, @RequestParam( "phone") String phone,
+                            @RequestParam("password") String password) {
+
+        //先到数据库验证
+        QueryWrapper<Employee> wrapper=new QueryWrapper();
+        wrapper.eq("phone",phone).eq("password",password);
+        Employee employeeFromDatabase = employeeService.getOne(wrapper);
+        if(null != employeeFromDatabase) {
+            Employee employee = new Employee();
+            employee.setPhone(phone);
+            employee.setPassword(password);
+            //给用户jwt加密生成token
+            String token = JWT.sign(employee, 60*3600*1000);
+            //token返回给客户端
+            return JsonResult.isOk("token", token);
+        }
+        else{
+            return JsonResult.error("账户/密码错误");
+        }
+    }
+    //处理登录
+    @RequestMapping(value="loginBySMS", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResult loginBySMS(HttpServletRequest request, @RequestParam( "phone") String phone,
+                            @RequestParam("SMS") String SMS) {
+
+        //验证
+        String redisSMS = redisUtil.getString("mobile" + phone);
+        if (null==redisSMS){
+            return JsonResult.error("验证码已过期");
+        }
+        if (redisSMS.equals(SMS)) {
+            QueryWrapper<Employee> wrapper = new QueryWrapper();
+            wrapper.eq("phone", phone);
+            Employee employeeFromDatabase = employeeService.getOne(wrapper);
+            if (null != employeeFromDatabase) {
+                Employee employee = new Employee();
+                employee.setPhone(phone);
+                employee.setPassword(employeeFromDatabase.getPassword());
+                //给用户jwt加密生成token
+                String token = JWT.sign(employee, 60 * 3600 * 1000);
+                //token返回给客户端
+                return JsonResult.isOk("token", token);
+            }else {
+                return JsonResult.error("用戶被刪除");
+            }
+        } else {
+            return JsonResult.error("验证码错误");
         }
     }
 }
