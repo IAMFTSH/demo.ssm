@@ -35,7 +35,8 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
     @Override
     public boolean sendSMS(String mobile) {
-        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "LTAI4G6u7HfYLHYjLw5x3jgb", "m8EuaQohDq1XaL66g9mNGdR5isbpA1");
+        //密钥自己去阿里云搞
+        DefaultProfile profile = DefaultProfile.getProfile("", "");
         IAcsClient client = new DefaultAcsClient(profile);
 
         CommonRequest request = new CommonRequest();
